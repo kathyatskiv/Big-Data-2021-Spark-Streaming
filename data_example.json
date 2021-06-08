@@ -1,0 +1,72 @@
+
+{
+    "venue" : {
+        "venue_name" : "Walmart Supercenter",
+        "lon" : -121.317375,
+        "lat" : 44.023815,
+        "venue_id" : 26124106
+    },
+    "visibility" : "public",
+    "response" : "yes",
+    "guests" : 0,
+    "member" : 
+    {
+        "member_id" : 237162623,
+        "photo" : "https:\/\/secure.meetupstatic.com\/photos\/member\/9\/7\/7\/0\/thumb_279218768.jpeg",
+        "member_name" : "Karen Grandidier"
+    },
+    "rsvp_id" : 1875722574,
+    "mtime" : 1622913129340,
+    "event" : 
+    {
+        "event_name" : "Salt Creek,Diamond Creek & Falls Creek-MODERATE\/6mi.\/1350 Ft EG",
+        "event_id" : "278643223",
+        "time" : 1624379400000,
+        "event_url" : "https:\/\/www.meetup.com\/PNW-Womens-Outdoor-Group-Central-Oregon-Chapter\/events\/278643223\/"
+    },
+    "group" : 
+    {
+        "group_topics": [
+            {
+                "urlkey" : "fitness",
+                "topic_name":"Fitness"
+            },
+            { 
+                "urlkey" : "camping",
+                "topic_name" : "Camping"
+            },
+            {
+                "urlkey" : "hiking",
+                "topic_name" : "Hiking"
+            },
+            {
+                "urlkey" : "walkers",
+                "topic_name":"Walking"
+            },
+            {
+                "urlkey" : "fun-times",
+                "topic_name" : "Fun Times"
+            },
+            {
+                "urlkey" : "adventure",
+                "topic_name" : "Adventure"
+            },
+            {
+                "urlkey" : "backpacking",
+                "topic_name" : "Backpacking"
+            },
+            {
+                "urlkey" : "outdoors",
+                "topic_name" : "Outdoors"
+            }
+        ],
+        "group_city" : "Bend",
+        "group_country" : "us",
+        "group_id" : 28921319,
+        "group_name" : "PNW Women's Outdoor Group, Central Oregon Chapter",
+        "group_lon" : -121.29,
+        "group_urlname" : "PNW-Womens-Outdoor-Group-Central-Oregon-Chapter",
+        "group_state" : "OR",
+        "group_lat" : 44.1
+    }
+}
