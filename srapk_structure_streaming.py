@@ -91,18 +91,20 @@ q2_data = Q1.select(
 )
 
 Q2 = q2_data.withColumn("event", concat(
-        lit("{ event_name: "),
+        lit("{ event_name: \""),
         col("event_name"),
-        lit(", event_id: "),
+        lit("\", event_id: "),
         col("event_id"),
         lit(", time: "),
         col("time")))\
     .withColumn("group_city", col("group_city"))\
     .withColumn("group_country", col("group_country"))\
     .withColumn("group_id", col("group_id"))\
-    .withColumn("group_name", col("group_name"))
-df.show()
-df.printSchema()
+    .withColumn("group_name", col("group_name"))\
+    .drop("event_name")\
+    .drop("event_id")\
+    .drop("time")
+Q2.printSchema()
 
 Q2.writeStream \
     .format("console") \
