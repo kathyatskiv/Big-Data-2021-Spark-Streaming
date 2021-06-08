@@ -3,3 +3,4 @@ config.py
 spark_streaming.py
 .idea/
 __pycache__/
+checkpoints/
