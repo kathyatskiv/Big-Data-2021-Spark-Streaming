@@ -162,27 +162,29 @@ Q3 = Q3.select(
     "cities")\
     .drop("window")
 
-Q3.select("*")\
-    .writeStream\
-    .format("console")\
-    .start()\
-    .awaitTermination()
+Q3 = Q3.select(to_json(struct("month", "day_of_the_month", "hour", "minute", "cities")).alias("value"))
+
+# Q3.select("*")\
+#     .writeStream\
+#     .format("console")\
+#     .start()\
+#     .awaitTermination()
 
 # Q2.writeStream \
+#     .format("kafka")\
 #     .option("kafka.bootstrap.servers", HOSTS) \
 #     .option("checkpointLocation", "checkpoint") \
 #     .option("topic", "us_meetups") \
 #     .start() \
-#     .start()\
 #     .awaitTermination()
-#
-# Q3.writeStream \
-#     .option("kafka.bootstrap.servers", HOSTS) \
-#     .option("checkpointLocation", "checkpoint") \
-#     .option("topic", "window_1_minute") \
-#     .start() \
-#     .start()\
-#     .awaitTermination()
+
+Q3.writeStream \
+    .format("kafka")\
+    .option("kafka.bootstrap.servers", HOSTS) \
+    .option("checkpointLocation", "checkpoint2") \
+    .option("topic", "window_1_minute") \
+    .start() \
+    .awaitTermination()
 
 
 
