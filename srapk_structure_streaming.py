@@ -13,7 +13,7 @@ df = spark.readStream.format("kafka") \
     .option("kafka.bootstrap.servers", HOSTS) \
     .option("subscribe", "all_events") \
     .load() \
-    .selectExpr("CAST(value as STRING)")
+    .selectExpr("CAST(value as STRING)", "CAST(timestamp AS STRING)")
 
 data_schema = StructType([
     StructField("venue", StructType([
@@ -143,27 +143,46 @@ Q2 = q2_data.join(states_df, q2_data.group_state == states_df.state_short, 'inne
 Q2 = Q2.select(to_json(struct("event", "group_city", "group_country", "group_id", "group_state")).alias("value"))
 
 # Using the window function you should prepare statistics which contains the set of the US cities, for which meetups were created during the given minute.
+
+q3_data = df.select(from_json("value", data_schema).alias("data"), "timestamp")
+q3_data = q3_data.select("data.*", to_timestamp("timestamp").alias("timestamp"))
+
 Q3 = \
-    q2_data.select("group_city", "time")\
-    .withWatermark("time", "1 minute") \
-    .groupBy(window("time", "1 minute", "1 minute"))\
+    q3_data.select("group.group_city", "timestamp")\
+    .withWatermark("timestamp", "1 minute") \
+    .groupBy(window("timestamp", "1 minute"))\
     .agg(collect_set("group_city").alias("cities"))
+#
+Q3 = Q3.select(
+    "window",
+    month("window.start").alias("month"),
+    dayofmonth("window.start").alias("day_of_the_month"),
+    hour("window.start").alias("hour"),
+    minute("window.start").alias("minute"),
+    "cities")\
+    .drop("window")
 
-Q2.writeStream \
-    .option("kafka.bootstrap.servers", HOSTS) \
-    .option("checkpointLocation", "checkpoint") \
-    .option("topic", "us_meetups") \
-    .start() \
+Q3.select("*")\
+    .writeStream\
+    .format("console")\
     .start()\
     .awaitTermination()
 
-Q3.writeStream \
-    .option("kafka.bootstrap.servers", HOSTS) \
-    .option("checkpointLocation", "checkpoint") \
-    .option("topic", "window_1_minute") \
-    .start() \
-    .start()\
-    .awaitTermination()
+# Q2.writeStream \
+#     .option("kafka.bootstrap.servers", HOSTS) \
+#     .option("checkpointLocation", "checkpoint") \
+#     .option("topic", "us_meetups") \
+#     .start() \
+#     .start()\
+#     .awaitTermination()
+#
+# Q3.writeStream \
+#     .option("kafka.bootstrap.servers", HOSTS) \
+#     .option("checkpointLocation", "checkpoint") \
+#     .option("topic", "window_1_minute") \
+#     .start() \
+#     .start()\
+#     .awaitTermination()
 
 
 
