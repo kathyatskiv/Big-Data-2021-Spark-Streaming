@@ -3,8 +3,6 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
 import os
-import json
-from datetime import datetime
 
 from config import HOSTS
 
@@ -144,16 +142,28 @@ Q2 = q2_data.join(states_df, q2_data.group_state == states_df.state_short, 'inne
 
 Q2 = Q2.select(to_json(struct("event", "group_city", "group_country", "group_id", "group_state")).alias("value"))
 
-Q2.selectExpr("CAST(value AS STRING)")\
-    .writeStream \
-    .format("kafka")\
-    .option("kafka.bootstrap.servers", HOSTS)\
-    .option("checkpointLocation", "checkpoint")\
+# Using the window function you should prepare statistics which contains the set of the US cities, for which meetups were created during the given minute.
+Q3 = \
+    q2_data.select("group_city", "time")\
+    .withWatermark("time", "1 minute") \
+    .groupBy(window("time", "1 minute", "1 minute"))\
+    .agg(collect_set("group_city").alias("cities"))
+
+Q2.writeStream \
+    .option("kafka.bootstrap.servers", HOSTS) \
+    .option("checkpointLocation", "checkpoint") \
     .option("topic", "us_meetups") \
     .start() \
+    .start()\
     .awaitTermination()
 
-# Q2.writeStream \
-#     .format("console")\
-#     .start() \
-#     .awaitTermination()
+Q3.writeStream \
+    .option("kafka.bootstrap.servers", HOSTS) \
+    .option("checkpointLocation", "checkpoint") \
+    .option("topic", "window_1_minute") \
+    .start() \
+    .start()\
+    .awaitTermination()
+
+
+
